@@ -103,12 +103,12 @@ JSON even they were just created by the `run()` function.
 Additionally, the returned promise is a bit special because it has a
 chainable function tacked onto it which can optionally be used to gain
 insight about whether or not a cache hit occured:
-- `onCheckedCache((cacheHit) => {})`: `cacheHit` is `true ` if
+- `onCheckedCache(cacheHit => {})`: `cacheHit` is `true ` if
   there exists an up-to-date value in the cache
 
 ```JS
 const output = await myBuildFn()
-  .onCheckedCache((hit) => { if (hit) { console.log('Wohoo! Cache hit') } })
+  .onCheckedCache(hit => { if (hit) { console.log('Wohoo! Cache hit') } })
 ```
 
 **Kind**: Exported class  
