@@ -1,7 +1,7 @@
 {
   "name": "cached-build-function",
-  "version": "0.9.0",
-  "description": "Create functions that use the file system for caching",
+  "version": "0.9.1",
+  "description": "Functions that use the file system for caching",
   "main": "lib/cached-build-function.js",
   "scripts": {
     "build-readme": "node -r esm tools/build-readme"
