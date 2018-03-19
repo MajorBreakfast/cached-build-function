@@ -43,8 +43,7 @@ await myResize.cleanUnused() // Removes unused cache entries
 ```
 
 Here are some more complex examples:
-- Excel file reading example
-- Image resizing example
+- [Image resizing example](https://github.com/MajorBreakfast/cached-build-function/blob/master/example/image-resizing)
 
 ## API
 
