@@ -1,0 +1,24 @@
+{
+  "name": "cached-build-function",
+  "version": "0.9.0",
+  "description": "Create functions that use the file system for caching",
+  "main": "lib/cached-build-function.js",
+  "scripts": {
+    "build-readme": "node -r esm tools/build-readme"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MajorBreakfast/cached-build-function.git"
+  },
+  "author": "Josef Brandl",
+  "license": "MIT",
+  "dependencies": {
+    "esm": "^3.0.6",
+    "fs-extra": "^5.0.0",
+    "serialize-error": "^2.1.0",
+    "write-file-atomic": "^2.3.0"
+  },
+  "devDependencies": {
+    "jsdoc-to-markdown": "^4.0.1"
+  }
+}
