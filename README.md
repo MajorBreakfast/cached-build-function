@@ -43,7 +43,8 @@ await myResize.cleanUnused() // Removes unused cache entries
 ```
 
 Here are some more complex examples:
-- [Image resizing example](https://github.com/MajorBreakfast/cached-build-function/blob/master/example/image-resizing)
+- [Excel file reading example](https://github.com/MajorBreakfast/cached-build-function/blob/master/example/excel-file-reading): Short and easy to understand example
+- [Image resizing example](https://github.com/MajorBreakfast/cached-build-function/blob/master/example/image-resizing): Uses `hashInput()`, `after()`, makes use of cache files and demonstrates "queue mode".
 
 ## API
 
@@ -136,7 +137,7 @@ This function lets you flush the queue.
 **Kind**: instance method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
 **Returns**: <code>object</code> - Object with the following properties:
 - `count`: The number of items in the queue
-- `checkedCache`: A promise that resolves to a `{ cacheHits, total }`
+- `checkedCache`: A promise that resolves to a `{ cacheHitCount }`
   object once all cache checks have been performed.
 - `all`: A promise that resolves to an array of the output values. If
   an error is encountered the promise will be rejected with that error.

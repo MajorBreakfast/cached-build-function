@@ -1,5 +1,6 @@
 # Image Resizing Example
 
+- `npm install`
 - `npm run build`
 - The `cache/` folder will contain some cache entries
 - The `resized-images/` folder will contain the resized images

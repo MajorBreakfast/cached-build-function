@@ -16,7 +16,7 @@ class ResizeImage extends CachedBuildFunction {
 
   static run (srcFile, dstFile, { maxWidth, maxHeight }) {
     return limit(async () => {
-      const { width, height } = await sharp(srcFile)
+      const { width, height } = await sharp(this.observePath(srcFile))
         .resize(maxWidth, maxHeight).max()
         .toFile(this.cachePath('resized-image'))
 
@@ -54,6 +54,9 @@ class ResizeImage extends CachedBuildFunction {
   console.log(`Use cache for ${cacheHitCount}, ` +
               `need to resize ${count - cacheHitCount} images`)
   await all
+
+  // Cache cleanup
+  await resizeImage.cleanUnused()
 
   console.log('Finished resizing images')
 
