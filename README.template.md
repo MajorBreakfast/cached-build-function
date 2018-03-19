@@ -1,4 +1,9 @@
+<a href="https://www.npmjs.com/package/cached-build-function">
+  <img alt="npm version" src="https://badge.fury.io/js/cached-build-function.svg">
+</a>
+
 # cached-build-function
+
 Are your build scripts slow? The `cached-build-function` package can help.
 It makes it easy to write build functions that use a cache folder on the
 file system to only recompute their output in case their input has changed.
