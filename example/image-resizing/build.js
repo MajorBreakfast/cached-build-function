@@ -39,21 +39,25 @@ class ResizeImage extends CachedBuildFunction {
 
   const resizeImage = new ResizeImage({ cachePath: 'cache/resize-image' })
 
-  // Enqueue work
-  const imageSizes = new Map()
-  for (let img of await readdir('images')) {
-    resizeImage.enqueue(`images/${img}`, `resized-images/${img}`, imageOptions)
-      .then((size) => { imageSizes.set(img, size) })
-  }
-
   await ensureDir('resized-images')
 
+  // Enqueue work
+  const fileNames = await readdir('images')
+  const imageSizes = new Map()
+  const promise = Promise.all(fileNames.map(async fileName => {
+    const srcFile = `images/${fileName}`
+    const dstFile = `resized-images/${fileName}`
+    const size = await resizeImage.enqueue(srcFile, dstFile, imageOptions)
+    imageSizes.set(fileName, size)
+  }))
+
   // Flush queue
-  const { count, checkedCache, all } = resizeImage.flush()
-  const { cacheHitCount } = await checkedCache
-  console.log(`Use cache for ${cacheHitCount}, ` +
-              `need to resize ${count - cacheHitCount} images`)
-  await all
+  resizeImage.flush({ promise: false })
+    .on('checkedCache', ({ cacheHitCount, cacheMissCount }) => {
+      console.log(`Use cache for ${cacheHitCount}, ` +
+                  `need to resize ${cacheMissCount} images`)
+    })
+  await promise
 
   // Cache cleanup
   await resizeImage.cleanUnused()
@@ -61,7 +65,7 @@ class ResizeImage extends CachedBuildFunction {
   console.log('Finished resizing images')
 
   // Print image sizes
-  for (let [img, { width, height }] of imageSizes.entries()) {
-    console.log(`Image "${img}" is now ${width}x${height}`)
+  for (let [fileName, { width, height }] of imageSizes.entries()) {
+    console.log(`Image "${fileName}" is now ${width}x${height}`)
   }
-})()
+})().catch(error => { console.log(error.stack) })

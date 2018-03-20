@@ -49,7 +49,7 @@ await myResize.cleanUnused() // Removes unused cache entries
 
 Here are some more complex examples:
 - [Excel file reading example](https://github.com/MajorBreakfast/cached-build-function/blob/master/example/excel-file-reading): Short and easy to understand example
-- [Image resizing example](https://github.com/MajorBreakfast/cached-build-function/blob/master/example/image-resizing): Uses `hashInput()`, `after()`, makes use of cache files and demonstrates "queue mode"
+- [Image resizing example](https://github.com/MajorBreakfast/cached-build-function/blob/master/example/image-resizing): Uses `hashInput()`, `after()`, cache files and "queue mode"
 
 ## API
 

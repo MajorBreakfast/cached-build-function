@@ -20,11 +20,11 @@ class ReadExcelFile extends CachedBuildFunction {
 
   // Read Excel file
   const content = await readExcelFile('excel-file.xlsx')
-    .onCheckedCache(hit => { if (hit) { console.log('Used cache') } })
+    .on('cacheHit', () => { console.log('Used cache') })
 
   // Cache cleanup
   await readExcelFile.cleanUnused()
 
   console.log('Finished reading Excel file')
   console.log(content)
-})()
+})().catch(error => { console.log(error.stack) })

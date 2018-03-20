@@ -49,7 +49,7 @@ await myResize.cleanUnused() // Removes unused cache entries
 
 Here are some more complex examples:
 - [Excel file reading example](https://github.com/MajorBreakfast/cached-build-function/blob/master/example/excel-file-reading): Short and easy to understand example
-- [Image resizing example](https://github.com/MajorBreakfast/cached-build-function/blob/master/example/image-resizing): Uses `hashInput()`, `after()`, makes use of cache files and demonstrates "queue mode"
+- [Image resizing example](https://github.com/MajorBreakfast/cached-build-function/blob/master/example/image-resizing): Uses `hashInput()`, `after()`, cache files and "queue mode"
 
 ## API
 
@@ -61,15 +61,17 @@ Here are some more complex examples:
     * [CachedBuildFunction](#exp_module_cached-build-function--CachedBuildFunction) ⏏
         * [new CachedBuildFunction(options)](#new_module_cached-build-function--CachedBuildFunction_new)
         * _instance_
-            * [.enqueue(...args)](#module_cached-build-function--CachedBuildFunction+enqueue)
-            * [.flush()](#module_cached-build-function--CachedBuildFunction+flush) ⇒ <code>object</code>
-            * [.cleanUnused()](#module_cached-build-function--CachedBuildFunction+cleanUnused)
+            * [.queuedCount](#module_cached-build-function--CachedBuildFunction+queuedCount) ⇒ <code>number</code>
+            * [.enqueue(...args)](#module_cached-build-function--CachedBuildFunction+enqueue) ⇒ <code>Promise</code>
+            * [.flush(options)](#module_cached-build-function--CachedBuildFunction+flush) ⇒ <code>Promise</code>
+            * [.clearQueue()](#module_cached-build-function--CachedBuildFunction+clearQueue)
+            * [.cleanUnused()](#module_cached-build-function--CachedBuildFunction+cleanUnused) ⇒ <code>Promise</code>
         * _static_
-            * *[.version](#module_cached-build-function--CachedBuildFunction.version)*
-            * [.outputConsistency](#module_cached-build-function--CachedBuildFunction.outputConsistency)
-            * *[.run()](#module_cached-build-function--CachedBuildFunction.run)*
-            * [.after()](#module_cached-build-function--CachedBuildFunction.after)
-            * [.hashInput()](#module_cached-build-function--CachedBuildFunction.hashInput)
+            * *[.version](#module_cached-build-function--CachedBuildFunction.version) ⇒ <code>string</code> \| <code>number</code>*
+            * [.outputConsistency](#module_cached-build-function--CachedBuildFunction.outputConsistency) ⇒ <code>boolean</code>
+            * *[.run()](#module_cached-build-function--CachedBuildFunction.run) ⇒ <code>Promise</code>*
+            * [.after()](#module_cached-build-function--CachedBuildFunction.after) ⇒ <code>Promise</code>
+            * [.hashInput()](#module_cached-build-function--CachedBuildFunction.hashInput) ⇒ <code>\*</code>
 
 <a name="exp_module_cached-build-function--CachedBuildFunction"></a>
 
@@ -100,16 +102,17 @@ For consistency, the `value` or `reason` to which the promise settles
 always looks like it comes from the cache, i.e. values are deserialized from
 JSON even they were just created by the `run()` function.
 
-Additionally, the returned promise is a bit special because it has a
-chainable function tacked onto it which can optionally be used to gain
-insight about whether or not a cache hit occured:
-- `onCheckedCache(cacheHit => {})`: `cacheHit` is `true ` if
-  there exists an up-to-date value in the cache
-
-```JS
-const output = await myBuildFn()
-  .onCheckedCache(hit => { if (hit) { console.log('Wohoo! Cache hit') } })
-```
+Furthermore, the returned promise has some extra properties:
+- `emitter` EventEmitter that fires the following events:
+  - `'checkedCache'`: Fired after the cache check has completed. Its
+    data is an object with a `cacheHit` boolean property
+  - `'cacheHit'`: Fired in case of a cache hit
+  - `'cacheMiss'`: Fired in case of a cache miss
+- `on()`: Calls `emitter.on()` and is chainable. This means you can do this:
+  ```JS
+  const output = await myBuildFn()
+    .on('cacheHit', () => { console.log('Wohoo! Cache hit') })
+  ```
 
 **Kind**: Exported class  
 <a name="new_module_cached-build-function--CachedBuildFunction_new"></a>
@@ -121,14 +124,21 @@ const output = await myBuildFn()
 | options | <code>object</code> |  |
 | options.cachePath | <code>boolean</code> | The path to the folder you intend to use for the cache. The `CachedBuildFunction` will create the folder if it does not already exist (and if necessary also its anchestors). The function expects the cache folder to only contain files it created. You should also refrain from modifying any of the cache files. You may, however, delete the folder or any of the files within it while the function is not running. |
 
+<a name="module_cached-build-function--CachedBuildFunction+queuedCount"></a>
+
+#### cachedBuildFunction.queuedCount ⇒ <code>number</code>
+Number of queued operations
+
+**Kind**: instance property of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
 <a name="module_cached-build-function--CachedBuildFunction+enqueue"></a>
 
-#### cachedBuildFunction.enqueue(...args)
+#### cachedBuildFunction.enqueue(...args) ⇒ <code>Promise</code>
 This function lets you enqueue a function call. Only the cache check
 will be performed immediately asynchronously, the call to `run()` (if
 needed) is delayed until you call `flush()`.
 
 **Kind**: instance method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
+**Returns**: <code>Promise</code> - Same promise as if you call the `CachedBuildFunction`  
 
 | Param | Type |
 | --- | --- |
@@ -136,24 +146,39 @@ needed) is delayed until you call `flush()`.
 
 <a name="module_cached-build-function--CachedBuildFunction+flush"></a>
 
-#### cachedBuildFunction.flush() ⇒ <code>object</code>
+#### cachedBuildFunction.flush(options) ⇒ <code>Promise</code>
 This function lets you flush the queue.
 
 **Kind**: instance method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
-**Returns**: <code>object</code> - Object with the following properties:
-- `count`: The number of items in the queue
-- `checkedCache`: A promise that resolves to a `{ cacheHitCount }`
-  object once all cache checks have been performed.
-- `all`: A promise that resolves to an array of the output values. If
-  an error is encountered the promise will be rejected with that error.
-  It does not wait for all functions to complete their execution in that
-  case.
-- `allSettled`: A promise that settles once all function calls have
-  completed their execution. Each array item has either the form
-  `{ value, state: 'fulfilled' }` or `{ reason, state: 'rejected' }`.  
+**Returns**: <code>Promise</code> - Promise with some extra properties:
+- `emitter` EventEmitter that fires the following event:
+  - `'checkedCache'`: Fired after the cache checks have completed. Its
+    data is an object with the properties:
+    - `count`: Total number of items
+    - `cacheHitCount`: Number of items that had a cache hit
+    - `cacheMissCount`: Number of items that had a cache miss
+- `on()`: Calls `emitter.on()` and is chainable. This means you can do this:
+  ```JS
+  await myFn.flush() // Returns promise
+    .on('checkedCache', ({ cacheHitCount, cacheMissCount }) => {
+       console.log(...)
+    }) // Chainable: Returns same promise again
+  ```  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| options | <code>object</code> |  |
+| options.promise | <code>boolean</code> | Defines what kind of promise should be returned: <ul> <li>   `'all'` (Default): The retruned promise resolves to an array containing   the result values. If an error occurs, the promise rejects with the first   error as soon as it happens. </li> <li>   `'allSettled'`: The returned promise resolves once all operations have   completed (instead of rejecting immediately after the first error).   It resolves to an array of objects of either the form   `{ value, state: 'fulfilled' }` or `{ reason, state: 'rejected' }`.   Note, it will always resolve (even if errors happen). </li> <li>   `false`: Return no promise at all. Instead return a plain object with   the extra properties `on` and `emitter`. Use this if you're already   handling the promise returned by `enqueue()`. </li> <ul> |
+
+<a name="module_cached-build-function--CachedBuildFunction+clearQueue"></a>
+
+#### cachedBuildFunction.clearQueue()
+Clears the queue
+
+**Kind**: instance method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
 <a name="module_cached-build-function--CachedBuildFunction+cleanUnused"></a>
 
-#### cachedBuildFunction.cleanUnused()
+#### cachedBuildFunction.cleanUnused() ⇒ <code>Promise</code>
 The `CachedBuildFunction` internally keeps track of which cache entries
 have been accessed since it was created. The `cleanUnused()` function
 removes any cache entries on disk that haven't been accessed.
@@ -161,7 +186,7 @@ removes any cache entries on disk that haven't been accessed.
 **Kind**: instance method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
 <a name="module_cached-build-function--CachedBuildFunction.version"></a>
 
-#### *CachedBuildFunction.version*
+#### *CachedBuildFunction.version ⇒ <code>string</code> \| <code>number</code>*
 The static `version` property returns an integer or string that reflects
 the current version of your `run()` function. You should change this
 property whenever you make behavioral changes to the function. This ensures
@@ -172,7 +197,7 @@ want to temporarily disable caching during development.
 **Kind**: static abstract property of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
 <a name="module_cached-build-function--CachedBuildFunction.outputConsistency"></a>
 
-#### CachedBuildFunction.outputConsistency
+#### CachedBuildFunction.outputConsistency ⇒ <code>boolean</code>
 The static `outputConsistency` property is intended for advanced users
 only. Normally the output value is always deserialized from JSON to make
 the output look like it comes from the cache whether or not it actually
@@ -192,7 +217,7 @@ leave it to `true`.
 **Default**: <code>true</code>  
 <a name="module_cached-build-function--CachedBuildFunction.run"></a>
 
-#### *CachedBuildFunction.run()*
+#### *CachedBuildFunction.run() ⇒ <code>Promise</code>*
 The static `run()` method is used to produce the output whenever
 no valid cache entry can be found. It is called with the arguments that
 the `CachedBuildFunction` was called with. The return value of this
@@ -215,7 +240,7 @@ during execution, the error will also be serialized and cached. The
 **Kind**: static abstract method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
 <a name="module_cached-build-function--CachedBuildFunction.after"></a>
 
-#### CachedBuildFunction.after()
+#### CachedBuildFunction.after() ⇒ <code>Promise</code>
 The static `after()` method can be used to transform the output produced
 by `run()` (given that no error occured). Just like `run()`, it is called
 with the arguments that the `CachedBuildFunction` was called with. Its
@@ -234,7 +259,7 @@ inside the function has the following properties and methods:
 **Kind**: static method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
 <a name="module_cached-build-function--CachedBuildFunction.hashInput"></a>
 
-#### CachedBuildFunction.hashInput()
+#### CachedBuildFunction.hashInput() ⇒ <code>\*</code>
 The `hashInput` static method selects the arguments that determine the
 cache key. The cache key will be created by serializing the return value
 to JSON and then hashing it. You should override this function if:
