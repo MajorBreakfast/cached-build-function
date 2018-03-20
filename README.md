@@ -159,10 +159,11 @@ This function lets you flush the queue.
     - `cacheMissCount`: Number of items that had a cache miss
 - `on()`: Calls `emitter.on()` and is chainable. This means you can do this:
   ```JS
-  await myFn.flush() // Returns promise
+  await myFn.flush()
     .on('checkedCache', ({ cacheHitCount, cacheMissCount }) => {
-       console.log(...)
-    }) // Chainable: Returns same promise again
+       console.log(`Found ${cacheHitCount} items in the cache, ` +
+                   `need to compute ${cacheHitCount} items`)
+    })
   ```  
 
 | Param | Type | Description |
