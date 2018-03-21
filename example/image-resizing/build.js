@@ -1,5 +1,5 @@
 import CachedBuildFunction from 'cached-build-function'
-import { copyFile, ensureDir, readdir } from 'fs-extra'
+import { copyFile, ensureDir, readdir, remove } from 'fs-extra'
 import sharp from 'sharp'
 import os from 'os'
 import pLimit from 'p-limit'
@@ -38,6 +38,7 @@ class ResizeImage extends CachedBuildFunction {
 
   const resizeImage = new ResizeImage({ cachePath: 'cache/resize-image' })
 
+  await remove('resized-images')
   await ensureDir('resized-images')
 
   // Enqueue work
