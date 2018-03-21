@@ -1,6 +1,5 @@
 import CachedBuildFunction from 'cached-build-function'
 import { readFile } from 'fs-extra'
-import { join } from 'path'
 import XLSX from 'xlsx'
 
 class ReadExcelFile extends CachedBuildFunction {
@@ -27,4 +26,7 @@ class ReadExcelFile extends CachedBuildFunction {
 
   console.log('Finished reading Excel file')
   console.log(content)
-})().catch(error => { console.log(error.stack) })
+})().catch(error => {
+  console.error(error.stack)
+  process.exit(1)
+})

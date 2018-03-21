@@ -1,8 +1,7 @@
 import CachedBuildFunction from 'cached-build-function'
 import { copyFile, ensureDir, readdir } from 'fs-extra'
-import { join } from 'path'
-import os from 'os'
 import sharp from 'sharp'
+import os from 'os'
 import pLimit from 'p-limit'
 
 const limit = pLimit(os.cpus().length * 4) // Concurrency limit
@@ -68,4 +67,7 @@ class ResizeImage extends CachedBuildFunction {
   for (let [fileName, { width, height }] of imageSizes.entries()) {
     console.log(`Image "${fileName}" is now ${width}x${height}`)
   }
-})().catch(error => { console.log(error.stack) })
+})().catch(error => {
+  console.error(error.stack)
+  process.exit(1)
+})
