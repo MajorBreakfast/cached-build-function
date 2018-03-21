@@ -6,7 +6,7 @@
     "build": "node -r esm build.js"
   },
   "dependencies": {
-    "cached-build-function": "^0.10.0",
+    "cached-build-function": "^0.12.0",
     "esm": "^3.0.6",
     "xlsx": "^0.12.5"
   }
