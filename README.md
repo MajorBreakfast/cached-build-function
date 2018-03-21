@@ -103,12 +103,13 @@ always looks like it comes from the cache, i.e. values are deserialized from
 JSON even they were just created by the `run()` function.
 
 Furthermore, the returned promise has some extra properties:
-- `emitter` EventEmitter that fires the following events:
+- `eventEmitter` EventEmitter that fires the following events:
   - `'checkedCache'`: Fired after the cache check has completed. Its
     data is an object with a `cacheHit` boolean property
   - `'cacheHit'`: Fired in case of a cache hit
   - `'cacheMiss'`: Fired in case of a cache miss
-- `on()`: Calls `emitter.on()` and is chainable. This means you can do this:
+- `on()`: Calls `eventEmitter.on()` and is chainable. This means you can do
+  this:
   ```JS
   const output = await myBuildFn()
     .on('cacheHit', () => { console.log('Wohoo! Cache hit') })
@@ -151,13 +152,14 @@ This function lets you flush the queue.
 
 **Kind**: instance method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
 **Returns**: <code>Promise</code> - Promise with some extra properties:
-- `emitter` EventEmitter that fires the following event:
+- `eventEmitter` EventEmitter that fires the following event:
   - `'checkedCache'`: Fired after the cache checks have completed. Its
     data is an object with the properties:
     - `count`: Total number of items
     - `cacheHitCount`: Number of items that had a cache hit
     - `cacheMissCount`: Number of items that had a cache miss
-- `on()`: Calls `emitter.on()` and is chainable. This means you can do this:
+- `on()`: Calls `eventEmitter.on()` and is chainable. This means you can do
+  this:
   ```JS
   await myFn.flush()
     .on('checkedCache', ({ cacheHitCount, cacheMissCount }) => {
@@ -169,7 +171,7 @@ This function lets you flush the queue.
 | Param | Type | Description |
 | --- | --- | --- |
 | options | <code>object</code> |  |
-| options.promise | <code>boolean</code> | Defines what kind of promise should be returned: <ul> <li>   `'all'` (Default): The retruned promise resolves to an array containing   the result values. If an error occurs, the promise rejects with the first   error as soon as it happens. </li> <li>   `'allSettled'`: The returned promise resolves once all operations have   completed (instead of rejecting immediately after the first error).   It resolves to an array of objects of either the form   `{ value, state: 'fulfilled' }` or `{ reason, state: 'rejected' }`.   Note, it will always resolve (even if errors happen). </li> <li>   `false`: Return no promise at all. Instead return a plain object with   the extra properties `on` and `emitter`. Use this if you're already   handling the promise returned by `enqueue()`. </li> <ul> |
+| options.promise | <code>boolean</code> | Defines what kind of promise should be returned: <ul> <li>   `'all'` (Default): The retruned promise resolves to an array containing   the result values. If an error occurs, the promise rejects with the first   error as soon as it happens. </li> <li>   `'allSettled'`: The returned promise resolves once all operations have   completed (instead of rejecting immediately after the first error).   It resolves to an array of objects of either the form   `{ value, state: 'fulfilled' }` or `{ reason, state: 'rejected' }`.   Note, it will always resolve (even if errors happen). </li> <li>   `false`: Return no promise at all. Instead return a plain object with   the extra properties `on` and `eventEmitter`. Use this if you're already   handling the promise returned by `enqueue()`. </li> <ul> |
 
 <a name="module_cached-build-function--CachedBuildFunction+clearQueue"></a>
 
@@ -228,9 +230,12 @@ during execution, the error will also be serialized and cached. The
 `this` inside the function is special and has the following methods:
 - `this.observeFile(path)`: You should call this function on any file paths
   that you're reading from. This ensures that the cached output is only
-  valid as long as none of the observed files have changed. Changes will be
-  detected by comparing the creation and modification timestamps and the
-  file size. For convenience, `observeFile()` returns its input.
+  valid as long as none of the observed files have changed. Whenever a
+  cache entry is found, `CachedBuildFunction` checks whether all observed
+  files remain unchanged before it decides to use the cache entry. It
+  does so by comparing the file size and creation and modification
+  timestamps. For convenience, `observeFile()` returns its input. It won't
+  throw an error if it can't find the file.
 - `this.cachePath(name)`: Returns a path inside the cache folder. You can
   use this path to create a file or folder that you want to cache. Later
   inside the `after()` function, you can access the stored file or folder.
