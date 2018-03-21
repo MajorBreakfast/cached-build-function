@@ -1,6 +1,6 @@
 {
   "name": "cached-build-function",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Functions that use the file system for caching",
   "main": "lib/cached-build-function.js",
   "scripts": {
