@@ -6,7 +6,7 @@ class ReadExcelFile extends CachedBuildFunction {
   static get version () { return 1 }
 
   static async run (srcFile) {
-    const workbook = XLSX.read(await readFile(this.observeFile(srcFile)))
+    const workbook = XLSX.read(await readFile(this.observe(srcFile)))
     const worksheet = workbook.Sheets[workbook.SheetNames[0]]
     return XLSX.utils.sheet_to_json(worksheet)
   }

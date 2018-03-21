@@ -28,7 +28,7 @@ class ProcessFile extends CachedBuildFunction {
   static get version () { return 1 }
 
   static async run (srcPath) {
-   const srcBuffer = await readFile(this.observeFile(srcPath))
+   const srcBuffer = await readFile(this.observe(srcPath))
    return someExpensiveOperation(srcBuffer.toString())
   }
 }

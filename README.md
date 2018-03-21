@@ -28,7 +28,7 @@ class ProcessFile extends CachedBuildFunction {
   static get version () { return 1 }
 
   static async run (srcPath) {
-   const srcBuffer = await readFile(this.observeFile(srcPath))
+   const srcBuffer = await readFile(this.observe(srcPath))
    return someExpensiveOperation(srcBuffer.toString())
   }
 }
@@ -228,13 +228,13 @@ function must be serializable (and deserializable) to (and from) JSON
 because it is written to the cache on disk. If the function throws an error
 during execution, the error will also be serialized and cached. The
 `this` inside the function is special and has the following methods:
-- `this.observeFile(path)`: You should call this function on any file paths
+- `this.observe(path)`: You should call this function on any file paths
   that you're reading from. This ensures that the cached output is only
   valid as long as none of the observed files have changed. Whenever a
   cache entry is found, `CachedBuildFunction` checks whether all observed
   files remain unchanged before it decides to use the cache entry. It
   does so by comparing the file size and creation and modification
-  timestamps. For convenience, `observeFile()` returns its input. It won't
+  timestamps. For convenience, `observe()` returns its input. It won't
   throw an error if it can't find the file.
 - `this.cachePath(name)`: Returns a path inside the cache folder. You can
   use this path to create a file or folder that you want to cache. Later
