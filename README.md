@@ -49,7 +49,7 @@ await myResize.cleanUnused() // Removes unused cache entries
 
 Here are some more complex examples:
 - [Excel file reading example](https://github.com/MajorBreakfast/cached-build-function/blob/master/example/excel-file-reading): Short and easy to understand example
-- [Image resizing example](https://github.com/MajorBreakfast/cached-build-function/blob/master/example/image-resizing): Uses `hashInput()`, `after()`, cache files and "queue mode"
+- [Image resizing example](https://github.com/MajorBreakfast/cached-build-function/blob/master/example/image-resizing): Uses `cacheKey()`, `after()`, cache files and "queue mode"
 
 ## API
 
@@ -71,7 +71,7 @@ Here are some more complex examples:
             * [.outputConsistency](#module_cached-build-function--CachedBuildFunction.outputConsistency) ⇒ <code>boolean</code>
             * *[.run()](#module_cached-build-function--CachedBuildFunction.run) ⇒ <code>Promise</code>*
             * [.after()](#module_cached-build-function--CachedBuildFunction.after) ⇒ <code>Promise</code>
-            * [.hashInput()](#module_cached-build-function--CachedBuildFunction.hashInput) ⇒ <code>\*</code>
+            * [.cacheKey()](#module_cached-build-function--CachedBuildFunction.cacheKey) ⇒ <code>\*</code>
 
 <a name="exp_module_cached-build-function--CachedBuildFunction"></a>
 
@@ -263,10 +263,10 @@ inside the function has the following properties and methods:
   `CachedBuildFunction` is called with the same input.
 
 **Kind**: static method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
-<a name="module_cached-build-function--CachedBuildFunction.hashInput"></a>
+<a name="module_cached-build-function--CachedBuildFunction.cacheKey"></a>
 
-#### CachedBuildFunction.hashInput() ⇒ <code>\*</code>
-The `hashInput` static method selects the arguments that determine the
+#### CachedBuildFunction.cacheKey() ⇒ <code>\*</code>
+The `cacheKey` static method selects the arguments that determine the
 cache key. The cache key will be created by serializing the return value
 to JSON and then hashing it. You should override this function if:
 - you have parameters that cannot be serialized to JSON and you want to

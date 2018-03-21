@@ -9,7 +9,7 @@ const limit = pLimit(os.cpus().length * 4) // Concurrency limit
 class ResizeImage extends CachedBuildFunction {
   static get version () { return 1 }
 
-  static hashInput (srcFile, dstFile, { maxWidth, maxHeight }) {
+  static cacheKey (srcFile, dstFile, { maxWidth, maxHeight }) {
     return [srcFile, maxWidth, maxHeight]
   }
 
