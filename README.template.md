@@ -20,7 +20,7 @@ How it works:
 
 You can create your `CachedBuildFunction` by inheriting from the class:
 
-```JS
+```javascript
 const { readFile } = require('fs-extra')
 const CachedBuildFunction = require('cached-build-function')
 
@@ -38,7 +38,7 @@ To use it, create an instance and call it like a function:
 
 *Note: Yes, instances of JavaScript classes can be functions :)*
 
-```JS
+```javascript
 const processFile = new ProcessFile({ cachePath: 'path/to/my/cache') })
 
 await processFile('data1.json') // Cheap if files havn't changed

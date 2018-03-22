@@ -20,7 +20,7 @@ How it works:
 
 You can create your `CachedBuildFunction` by inheriting from the class:
 
-```JS
+```javascript
 const { readFile } = require('fs-extra')
 const CachedBuildFunction = require('cached-build-function')
 
@@ -38,7 +38,7 @@ To use it, create an instance and call it like a function:
 
 *Note: Yes, instances of JavaScript classes can be functions :)*
 
-```JS
+```javascript
 const processFile = new ProcessFile({ cachePath: 'path/to/my/cache') })
 
 await processFile('data1.json') // Cheap if files havn't changed
@@ -79,7 +79,7 @@ Here are some more complex examples:
 The `CachedBuildFunction` class is abstract. To use it, you need to create
 a subclass and implement the static properties `version` and `run`.
 
-```JS
+```javascript
 class MyBuildFn extends CachedBuildFunction {
   static get version () { return 123 }
   static async run (...) { ... }
@@ -89,7 +89,7 @@ class MyBuildFn extends CachedBuildFunction {
 Next, you can create an instance with the `new` operator and because
 instances are functions you can call it.
 
-```JS
+```javascript
 const myBuildFn = new MyBuildFn({ cachePath: '...' })
 const output = await myBuildFn(arg1, arg2, ...)
 ```
@@ -110,7 +110,7 @@ Furthermore, the returned promise has some extra properties:
   - `'cacheMiss'`: Fired in case of a cache miss
 - `on()`: Calls `eventEmitter.on()` and is chainable. This means you can do
   this:
-  ```JS
+  ```javascript
   const output = await myBuildFn()
     .on('cacheHit', () => { console.log('Wohoo! Cache hit') })
   ```
@@ -160,7 +160,7 @@ This function lets you flush the queue.
     - `cacheMissCount`: Number of items that had a cache miss
 - `on()`: Calls `eventEmitter.on()` and is chainable. This means you can do
   this:
-  ```JS
+  ```javascript
   await myFn.flush()
     .on('checkedCache', ({ cacheHitCount, cacheMissCount }) => {
        console.log(`Found ${cacheHitCount} items in the cache, ` +
