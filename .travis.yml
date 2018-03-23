@@ -6,7 +6,6 @@ cache:
   directories:
     - $HOME/.npm
 before_install:
-  - npm install --global npm@5.7.0
   - npm --version
 install: |
   npm install --prefer-online
