@@ -4,7 +4,8 @@
   "description": "Functions that use the file system for caching",
   "main": "lib/cached-build-function.js",
   "scripts": {
-    "build-readme": "node -r esm tools/build-readme"
+    "build-readme": "node -r esm tools/build-readme",
+    "test": "ava"
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,13 @@
     "write-file-atomic": "^2.3.0"
   },
   "devDependencies": {
-    "jsdoc-to-markdown": "^4.0.1"
+    "ava": "^0.25.0",
+    "jsdoc-to-markdown": "^4.0.1",
+    "sinon": "^4.4.8"
+  },
+  "ava": {
+    "require": [
+      "esm"
+    ]
   }
 }
