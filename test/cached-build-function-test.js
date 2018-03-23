@@ -1,5 +1,5 @@
 import { join } from 'path'
-import { remove } from 'fs-extra'
+import { remove, readdir } from 'fs-extra'
 import test from 'ava'
 import sinon from 'sinon'
 import CachedBuildFunction from '../lib/cached-build-function'
@@ -142,4 +142,44 @@ test('returned promise has working EventEmitter', async t => {
   t.false(cacheMissSpy2.called)
   t.true(checkedCacheSpy2.calledOnce)
   t.deepEqual(checkedCacheSpy2.getCall(0).args[0], { cacheHit: true })
+})
+
+test('cleans up unused cache entries', async t => {
+  class MyBuildFn extends CachedBuildFunction {
+    static get version () { return 1 }
+    static async run (a, b) { return a + b }
+  }
+
+  {
+    const myBuildFn = new MyBuildFn({ cachePath: t.context.cachePath })
+
+    await myBuildFn(1, 1)
+    t.true((await readdir(t.context.cachePath)).length === 1)
+
+    await myBuildFn(2, 3)
+    t.true((await readdir(t.context.cachePath)).length === 2)
+
+    await myBuildFn.cleanUnused()
+    t.true((await readdir(t.context.cachePath)).length === 2)
+  }
+
+  {
+    const myBuildFn = new MyBuildFn({ cachePath: t.context.cachePath })
+
+    await myBuildFn(1, 1)
+    t.true((await readdir(t.context.cachePath)).length === 2)
+
+    await myBuildFn(5, 1)
+    t.true((await readdir(t.context.cachePath)).length === 3)
+
+    await myBuildFn.cleanUnused()
+    t.true((await readdir(t.context.cachePath)).length === 2)
+  }
+
+  {
+    const myBuildFn = new MyBuildFn({ cachePath: t.context.cachePath })
+
+    await myBuildFn.cleanUnused()
+    t.true((await readdir(t.context.cachePath)).length === 0)
+  }
 })
