@@ -1,6 +1,9 @@
 <a href="https://www.npmjs.com/package/cached-build-function">
   <img alt="npm version" src="https://badge.fury.io/js/cached-build-function.svg">
 </a>
+<a href="https://travis-ci.org/avajs/ava">
+  <img alt="build status" src="https://travis-ci.org/avajs/ava.svg?branch=master">
+</a>
 
 # cached-build-function
 
@@ -115,7 +118,7 @@ Furthermore, the returned promise has some extra properties:
     .on('cacheHit', () => { console.log('Wohoo! Cache hit') })
   ```
 
-**Kind**: Exported class  
+**Kind**: Exported class
 <a name="new_module_cached-build-function--CachedBuildFunction_new"></a>
 
 #### new CachedBuildFunction(options)
@@ -130,7 +133,7 @@ Furthermore, the returned promise has some extra properties:
 #### cachedBuildFunction.queuedCount ⇒ <code>number</code>
 Number of queued operations
 
-**Kind**: instance property of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
+**Kind**: instance property of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)
 <a name="module_cached-build-function--CachedBuildFunction+enqueue"></a>
 
 #### cachedBuildFunction.enqueue(...args) ⇒ <code>Promise</code>
@@ -138,19 +141,19 @@ This function lets you enqueue a function call. Only the cache check
 will be performed immediately asynchronously, the call to `run()` (if
 needed) is delayed until you call `flush()`.
 
-**Kind**: instance method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
-**Returns**: <code>Promise</code> - Same promise as if you call the `CachedBuildFunction`  
+**Kind**: instance method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)
+**Returns**: <code>Promise</code> - Same promise as if you call the `CachedBuildFunction`
 
 | Param | Type |
 | --- | --- |
-| ...args | <code>\*</code> | 
+| ...args | <code>\*</code> |
 
 <a name="module_cached-build-function--CachedBuildFunction+flush"></a>
 
 #### cachedBuildFunction.flush(options) ⇒ <code>Promise</code>
 This function lets you flush the queue.
 
-**Kind**: instance method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
+**Kind**: instance method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)
 **Returns**: <code>Promise</code> - Promise with some extra properties:
 - `eventEmitter` EventEmitter that fires the following event:
   - `'checkedCache'`: Fired after the cache checks have completed. Its
@@ -166,7 +169,7 @@ This function lets you flush the queue.
        console.log(`Found ${cacheHitCount} items in the cache, ` +
                    `need to compute ${cacheHitCount} items`)
     })
-  ```  
+  ```
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -178,7 +181,7 @@ This function lets you flush the queue.
 #### cachedBuildFunction.clearQueue()
 Clears the queue
 
-**Kind**: instance method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
+**Kind**: instance method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)
 <a name="module_cached-build-function--CachedBuildFunction+cleanUnused"></a>
 
 #### cachedBuildFunction.cleanUnused() ⇒ <code>Promise</code>
@@ -186,7 +189,7 @@ The `CachedBuildFunction` internally keeps track of which cache entries
 have been accessed since it was created. The `cleanUnused()` function
 removes any cache entries on disk that haven't been accessed.
 
-**Kind**: instance method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
+**Kind**: instance method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)
 <a name="module_cached-build-function--CachedBuildFunction.version"></a>
 
 #### *CachedBuildFunction.version ⇒ <code>string</code> \| <code>number</code>*
@@ -197,7 +200,7 @@ that previously created cache entries, which are now outdated, are not used
 to produce the output. You can set the `version` to `Math.random()` if you
 want to temporarily disable caching during development.
 
-**Kind**: static abstract property of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
+**Kind**: static abstract property of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)
 <a name="module_cached-build-function--CachedBuildFunction.outputConsistency"></a>
 
 #### CachedBuildFunction.outputConsistency ⇒ <code>boolean</code>
@@ -216,8 +219,8 @@ into problems where your output looks different depending on whether it
 came from the cache. To prevent bugs in your code, it is recommended to
 leave it to `true`.
 
-**Kind**: static property of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
-**Default**: <code>true</code>  
+**Kind**: static property of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)
+**Default**: <code>true</code>
 <a name="module_cached-build-function--CachedBuildFunction.run"></a>
 
 #### *CachedBuildFunction.run() ⇒ <code>Promise</code>*
@@ -243,7 +246,7 @@ during execution, the error will also be serialized and cached. The
   The returned path has the form
   `` `${cacheFolder}/${cacheKey}-${name}` ``.
 
-**Kind**: static abstract method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
+**Kind**: static abstract method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)
 <a name="module_cached-build-function--CachedBuildFunction.after"></a>
 
 #### CachedBuildFunction.after() ⇒ <code>Promise</code>
@@ -262,7 +265,7 @@ inside the function has the following properties and methods:
   because it has to be there exactly the same the next time the
   `CachedBuildFunction` is called with the same input.
 
-**Kind**: static method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
+**Kind**: static method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)
 <a name="module_cached-build-function--CachedBuildFunction.cacheKey"></a>
 
 #### CachedBuildFunction.cacheKey() ⇒ <code>\*</code>
@@ -274,5 +277,5 @@ to JSON and then hashing it. You should override this function if:
 - you have parameters that do not influence the behavior of the `run()`
   function, e.g. a parameter that is only used in the `after()` function.
 
-**Kind**: static method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)  
+**Kind**: static method of [<code>CachedBuildFunction</code>](#exp_module_cached-build-function--CachedBuildFunction)
 

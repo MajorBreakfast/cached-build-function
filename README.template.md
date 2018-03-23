@@ -1,6 +1,9 @@
 <a href="https://www.npmjs.com/package/cached-build-function">
   <img alt="npm version" src="https://badge.fury.io/js/cached-build-function.svg">
 </a>
+<a href="https://travis-ci.org/avajs/ava">
+  <img alt="build status" src="https://travis-ci.org/avajs/ava.svg?branch=master">
+</a>
 
 # cached-build-function
 
