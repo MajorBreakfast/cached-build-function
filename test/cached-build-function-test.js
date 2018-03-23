@@ -8,20 +8,23 @@ test.before(async t => {
   await remove(join(__dirname, 'cache'))
 })
 
+let cachePathIndex = 0
+test.beforeEach(t => {
+  t.context.cachePath = join(__dirname, `cache/test${cachePathIndex++}`)
+})
+
 test.after(async t => {
   await remove(join(__dirname, 'cache'))
 })
 
 test('executes run() only when necessary', async t => {
-  const cachePath = join(__dirname, 'cache/test1')
-
   // Scenario 1/5 Create build function and run it
   const runSpy1 = sinon.spy()
   class MyBuildFn1 extends CachedBuildFunction {
     static get version () { return 1 }
     static async run (a, b) { runSpy1(a, b); return a + b }
   }
-  const myBuildFn1 = new MyBuildFn1({ cachePath })
+  const myBuildFn1 = new MyBuildFn1({ cachePath: t.context.cachePath })
 
   t.true(await myBuildFn1(1, 2) === 3)
   t.true(await myBuildFn1(3, 4) === 7)
@@ -40,7 +43,7 @@ test('executes run() only when necessary', async t => {
   t.true(runSpy1.callCount === 3) // Still
 
   // Scenario 3/5 Run again: Same build function class, another instance
-  const myBuildFn1b = new MyBuildFn1({ cachePath })
+  const myBuildFn1b = new MyBuildFn1({ cachePath: t.context.cachePath })
 
   t.true(await myBuildFn1b(1, 2) === 3)
   t.true(await myBuildFn1b(3, 4) === 7)
@@ -55,7 +58,7 @@ test('executes run() only when necessary', async t => {
     static async run (a, b) { runSpy2(a, b); return a + b }
   }
 
-  const myBuildFn2 = new MyBuildFn2({ cachePath })
+  const myBuildFn2 = new MyBuildFn2({ cachePath: t.context.cachePath })
 
   t.true(await myBuildFn2(1, 2) === 3)
   t.true(await myBuildFn2(3, 4) === 7)
@@ -70,7 +73,7 @@ test('executes run() only when necessary', async t => {
     static async run (a, b) { runSpy3(a, b); return a + b }
   }
 
-  const myBuildFn3 = new MyBuildFn3({ cachePath })
+  const myBuildFn3 = new MyBuildFn3({ cachePath: t.context.cachePath })
 
   t.true(await myBuildFn3(1, 2) === 3)
   t.true(await myBuildFn3(3, 4) === 7)
@@ -83,14 +86,12 @@ test('executes run() only when necessary', async t => {
 })
 
 test('returns same promise for same input at the same time', async t => {
-  const cachePath = join(__dirname, 'cache/test2')
-
   const runSpy = sinon.spy()
   class MyBuildFn extends CachedBuildFunction {
     static get version () { return 1 }
     static async run (a, b) { runSpy(a, b); return a + b }
   }
-  const myBuildFn = new MyBuildFn({ cachePath })
+  const myBuildFn = new MyBuildFn({ cachePath: t.context.cachePath })
 
   const promises = [myBuildFn(3, 4), myBuildFn(3, 4)]
 
@@ -105,13 +106,11 @@ test('returns same promise for same input at the same time', async t => {
 })
 
 test('returned promise has working EventEmitter', async t => {
-  const cachePath = join(__dirname, 'cache/test3')
-
   class MyBuildFn extends CachedBuildFunction {
     static get version () { return 1 }
     static async run (a, b) { return a + b }
   }
-  const myBuildFn = new MyBuildFn({ cachePath })
+  const myBuildFn = new MyBuildFn({ cachePath: t.context.cachePath })
 
   const cacheHitSpy1 = sinon.spy()
   const cacheMissSpy1 = sinon.spy()
